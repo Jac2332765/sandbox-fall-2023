@@ -12,7 +12,7 @@ public class Frog extends Amphibian {
 
 
     public void eat() {
-    System.out.println("eating frog");
+    System.out.println("frog is eating");
     }
 
     @Override
@@ -22,7 +22,7 @@ public class Frog extends Amphibian {
 
     @Override
     public void hunt() {
-
+    System.out.println("Frog is being hunted");
     }
 
     @Override
