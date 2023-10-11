@@ -1,5 +1,8 @@
 package org.example.fib;
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/main
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,7 +16,11 @@ public class FibonacciNumbers {
 
         FibonacciNumbers fn = new FibonacciNumbers();
 
+<<<<<<< HEAD
         for (int x = 0; x <= 60; x++) {
+=======
+        for (int x = 0; x <=60; x++) {
+>>>>>>> origin/main
 
 
             System.out.println(x + " : " + fn.fib(x));
@@ -34,10 +41,16 @@ public class FibonacciNumbers {
 
 
     }
+<<<<<<< HEAD
 
     private long memo(int m) {
         Long value = dictionary.get(m);
         if (value != null) {
+=======
+    private long memo(int m) {
+        Long value = dictionary.get(m);
+        if (value != null){
+>>>>>>> origin/main
             return value;
 
         }
