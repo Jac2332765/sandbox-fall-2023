@@ -1,9 +1,8 @@
-package trees.binarysearchtree;
+package org.example.trees.binarysearchtree;
 
 
 import org.example.trees.ElementNotFoundException;
 import org.example.trees.Tree;
-import org.example.trees.binarytree.BinaryTree;
 
 import java.util.*;
 

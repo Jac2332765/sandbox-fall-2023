@@ -1,4 +1,4 @@
-package trees.binarytree;
+package org.example.trees.binarytree;
 
 import org.example.trees.ElementNotFoundException;
 import org.example.trees.Tree;

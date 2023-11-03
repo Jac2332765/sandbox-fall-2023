@@ -1,4 +1,4 @@
-package trees;
+package org.example.trees;
 
 import java.util.Iterator;
 

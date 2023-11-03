@@ -1,4 +1,4 @@
-package trees;
+package org.example.trees;
 
 public class ElementNotFoundException extends Exception {
 
