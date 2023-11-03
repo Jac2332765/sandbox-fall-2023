@@ -14,7 +14,7 @@ public interface Tree<T> extends Iterable<T> {
 
     Iterator<T> iterator();
     Iterator<T> iteratorPreOrder();
-    Iterator iteratorInOrder();
+    Iterator<T> iteratorInOrder();
     Iterator<T> iteratorPostOrder();
     Iterator<T> iteratorLevelOrder();
 

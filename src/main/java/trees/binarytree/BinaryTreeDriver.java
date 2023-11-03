@@ -1,8 +1,6 @@
 package trees.binarytree;
 
-
-import trees.Tree;
-import trees.binarytree.BinaryTree;
+import org.example.trees.Tree;
 
 import java.util.Iterator;
 

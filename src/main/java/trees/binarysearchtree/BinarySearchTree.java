@@ -1,24 +1,27 @@
-package trees.binarytree;
+package trees.binarysearchtree;
+
 
 import org.example.trees.ElementNotFoundException;
 import org.example.trees.Tree;
+import org.example.trees.binarytree.BinaryTree;
 
 import java.util.*;
 
-public class BinaryTree<T> implements Tree<T> {
+public class BinarySearchTree<T extends Comparable> implements Tree<T> {
 
     private BinaryTreeNode<T> root;
     private int count;
 
-    public BinaryTree() {
+    public BinarySearchTree() {
         this.root = null;
         this.count = 0;
     }
 
     @Override
     public boolean create() {
-        this.root = null;
-        this.count = 0;
+
+        this.root = new BinaryTreeNode<>();
+
         return true;
     }
 
@@ -27,20 +30,34 @@ public class BinaryTree<T> implements Tree<T> {
 
         T insertedElement = null;
         if (this.root == null) {
-            this.root = new BinaryTreeNode<>(element);
+            this.root = new BinaryTreeNode(element);
+            insertedElement = root.element;
         } else {
-            Iterator<BinaryTreeNode<T>> iterator = insertionIterator();
-            while (iterator.hasNext()) {
-                BinaryTreeNode<T> node = iterator.next();
-                if (node.element == null) {
-                    node.element = element;
-                    insertedElement = node.element;
-                    node.left = new BinaryTreeNode<>();
-                    node.right = new BinaryTreeNode<>();
-                    count++;
-                    break;
-                }
+            insertedElement = insertInto(element, root);
+        }
+        return insertedElement;
+    }
 
+    private T insertInto(T element, BinaryTreeNode<T> root) {
+
+        T insertedElement = null;
+        if (element.compareTo(root.element) < 0) {
+            if (root.left.element != null) {
+                insertInto(element, root.left);
+            } else {
+                root.left.element = element;
+                root.left.left = new BinaryTreeNode<>();
+                root.left.right = new BinaryTreeNode<>();
+                insertedElement = root.left.element;
+            }
+        } else {
+            if (root.right.element != null) {
+                insertInto(element, root.right);
+            } else {
+                root.right.element = element;
+                root.right.left = new BinaryTreeNode<>();
+                root.right.right = new BinaryTreeNode<>();
+                insertedElement = root.right.element;
             }
         }
         return insertedElement;
@@ -48,18 +65,19 @@ public class BinaryTree<T> implements Tree<T> {
 
     @Override
     public T search(T targetElement) throws ElementNotFoundException {
-        BinaryTreeNode<T> current = findNode(targetElement, root);
 
-        if (current == null) throw new ElementNotFoundException(this.getClass()
-                .getCanonicalName());
+        BinaryTreeNode<T> target = findNode(targetElement, root);
 
-        return (current.getElement());
+        if (target == null) {
+            throw new ElementNotFoundException(this.getClass()
+                    .getCanonicalName());
+        }
+
+        return (target.getElement());
     }
 
     private BinaryTreeNode<T> findNode(T targetElement, BinaryTreeNode<T> next) {
-        if (next == null) {
-            return null;
-        }
+        if (next == null) return null;
 
         if (next.getElement()
                 .equals(targetElement)) return next;
@@ -72,109 +90,57 @@ public class BinaryTree<T> implements Tree<T> {
     }
 
     @Override
-    public boolean delete(T element) {
+    public boolean delete(T data) {
 
-        return delete(this.root, element);
-    }
-
-    private boolean delete(BinaryTreeNode<T> root, T targetValue) {
-
-        if (root == null) {
-            return false;
-        }
-
-        if (root.left.element == null && root.right.element == null) {
-
-            if (root.element == targetValue) {
-                root.element = null;
-                return true;
-            } else {
-                return false;
-            }
-        }
-
-        Queue<BinaryTreeNode<T>> queue = new LinkedList<>();
-        queue.add(root);
-        BinaryTreeNode<T> deepestNode = null;
-        BinaryTreeNode<T> targetNode = null;
-
-        // Do level order traversal until
-        // we find target node and last node.
-        while (!queue.isEmpty()) {
-
-            deepestNode = queue.peek();
-            queue.remove();
-
-            if (deepestNode.element == targetValue) {
-                targetNode = deepestNode;
-            }
-
-            if (deepestNode.left.element != null) {
-                queue.add(deepestNode.left);
-            }
-
-            if (deepestNode.right.element != null) {
-                queue.add(deepestNode.right);
-            }
-        }
-
-        if (targetNode != null) {
-
-            boolean deleteLast = deepestNode == targetNode;
-            T x = deepestNode.element;
-            deleteDeepest(this.root, deepestNode);
-            if (!deleteLast) {
-                // move last element to target node
-                targetNode.element = x;
-            }
-        }
-
+        deleteNode(this.root, data);
         return true;
     }
 
-    private void deleteDeepest(BinaryTreeNode<T> root, BinaryTreeNode<T> deleteNode) {
+    private BinaryTreeNode<T> deleteNode(BinaryTreeNode<T> root, T data) {
 
-        Queue<BinaryTreeNode<T>> queue = new LinkedList<>();
-        queue.add(root);
+        if(root.element == null) return root;
 
-        BinaryTreeNode<T> temp = null;
+        if(root.element.compareTo(data) > 0) {
+            root.left = deleteNode(root.getLeft(), data);
+        } else if(root.element.compareTo(data) < 0) {
+            root.right = deleteNode(root.getRight(), data);
+        } else {
+            // node with no leaf nodes
+            if(root.left.element == null && root.right.element == null) {
 
-        // Do level order traversal until last node
-        while (!queue.isEmpty()) {
+                root.left = null;
+                root.right = null;
+                root.element = null;
+                return root;
+            } else if(root.getLeft() == null) {
 
-            temp = queue.peek();
-            queue.remove();
+                // node with one node (no left node)
+                return root.right;
+            } else if(root.getRight() == null) {
 
-            if (temp == deleteNode) {
-                temp.element = null;
-                temp.left = null;
-                temp.right = null;
-                return;
-            }
+                // node with one node (no right node)
+                return root.left;
+            } else {
 
-            if (temp.right != null) {
-                if (temp.right == deleteNode) {
-                    temp.right.element = null;
-                    temp.right.right = null;
-                    temp.right.left = null;
-                    return;
-                } else {
-                    queue.add(temp.right);
-                }
-            }
-
-            if (temp.left != null) {
-                if (temp.left == deleteNode) {
-                    temp.left.element = null;
-                    temp.left.right = null;
-                    temp.left.left = null;
-                    return;
-                } else {
-                    queue.add(temp.left);
-                }
+                // nodes with two nodes
+                // search for min number in right sub tree
+                T minValue = minValue(root.right);
+                root.element = minValue;
+                root.right = deleteNode(root.right, minValue);
             }
         }
+
+        return root;
     }
+
+    private T minValue(BinaryTreeNode<T> node) {
+
+        if(node.left.element != null) {
+            return minValue(node.getLeft());
+        }
+        return node.element;
+    }
+
 
     @Override
     public boolean contains(T targetElement) {
@@ -203,11 +169,11 @@ public class BinaryTree<T> implements Tree<T> {
         return iteratorLevelOrder();
     }
 
-    @Override
     public Iterator<T> iteratorPreOrder() {
 
         Queue<T> tempList = new LinkedList<>();
         preOrder(root, tempList);
+
         return tempList.iterator();
     }
 
@@ -221,11 +187,11 @@ public class BinaryTree<T> implements Tree<T> {
         }
     }
 
-    @Override
     public Iterator<T> iteratorInOrder() {
 
         Queue<T> tempList = new LinkedList<>();
         inOrder(root, tempList);
+
         return tempList.iterator();
     }
 
@@ -239,11 +205,11 @@ public class BinaryTree<T> implements Tree<T> {
         }
     }
 
-    @Override
     public Iterator<T> iteratorPostOrder() {
 
         Queue<T> tempList = new LinkedList<>();
         postOrder(root, tempList);
+
         return tempList.iterator();
     }
 
@@ -257,25 +223,25 @@ public class BinaryTree<T> implements Tree<T> {
         }
     }
 
-    @Override
     public Iterator<T> iteratorLevelOrder() {
 
         Queue<T> tempList = new LinkedList<>();
         levelOrder(root, tempList);
+
         return tempList.iterator();
     }
 
-    public void levelOrder(BinaryTreeNode<T> node, Queue<T> tempList) {
+    private void levelOrder(BinaryTreeNode<T> node, Queue<T> tempList) {
 
         // temporary node queue
-        Queue<BinaryTreeNode<T>> queue = new LinkedList<>();
+        Queue<BinarySearchTree.BinaryTreeNode<T>> queue = new LinkedList<>();
         queue.add(node);
 
         // while we have nodes to iterate over...
         while(!queue.isEmpty()) {
 
             // store node value
-            BinaryTreeNode<T> tempNode = queue.poll();
+            BinarySearchTree.BinaryTreeNode<T> tempNode = queue.poll();
             tempList.add(tempNode.element);  // visiting the node
 
             // store left node if not null
@@ -287,11 +253,7 @@ public class BinaryTree<T> implements Tree<T> {
                 queue.add(tempNode.right);
             }
 
-
         }
-
-
-
 
     }
 
@@ -336,7 +298,6 @@ public class BinaryTree<T> implements Tree<T> {
         int widest = 0;
 
         while (nn != 0) {
-
             List<String> line = new ArrayList<>();
 
             nn = 0;
@@ -470,4 +431,5 @@ public class BinaryTree<T> implements Tree<T> {
         }
 
     }
+
 }

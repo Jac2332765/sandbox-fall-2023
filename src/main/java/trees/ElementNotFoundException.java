@@ -1,6 +1,5 @@
 package trees;
 
-
 public class ElementNotFoundException extends Exception {
 
     public ElementNotFoundException() {
